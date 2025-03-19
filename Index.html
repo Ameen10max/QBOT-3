@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+    <link href="https://fonts.cdnfonts.com/css/Amerika" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            
+    font-family: 'Amerika', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Title */
+        .qbot-title {
+            font-size: 50px;
+            font-weight: bold;
+            color: #00FF00;
+            text-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000;
+            margin-bottom: 15px;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            width: 400px;
+            height: 500px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        /* Chat Box */
+        .chat-box {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 400px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        /* Message Styles */
+        .user-message, .bot-message {
+            padding: 12px;
+            margin: 6px;
+            border-radius: 15px;
+            max-width: 70%;
+            box-shadow: 0px 4px 6px rgba(0, 255, 255, 0.3);
+            animation: fadeIn 0.3s ease-in-out;
+            position: relative;
+        }
+
+        .user-message {
+            background: #00ff88;
+            color: black;
+            align-self: flex-end;
+            text-align: right;
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .bot-message {
+            background: #008CBA;
+            color: white;
+            align-self: flex-start;
+            text-align: left;
+            box-shadow: 0 0 10px #008CBA;
+        }
+
+        /* Typing Animation */
+        .typing {
+            display: inline-block;
+            font-size: 14px;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .typing::after {
+            content: " .";
+            animation: typingDots 1.5s infinite steps(3);
+        }
+
+        @keyframes typingDots {
+            0% { content: " ."; }
+            33% { content: " .."; }
+            66% { content: " ..."; }
+        }
+
+        /* Input Container */
+        .input-container {
+            display: flex;
+            padding: 8px;
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        /* Input Field */
+        #user-input {
+            flex-grow: 1;
+            padding: 12px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #0ff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            transition: 0.3s;
+        }
+
+        #user-input:focus {
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Send Button */
+        #send-btn {
+            margin-left: 10px;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 50%;
+            background: #0ff;
+            color: black;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px #0ff;
+        }
+
+        #send-btn:hover {
+            background: #00ff88;
+            box-shadow: 0 0 20px #00ff88;
+            transform: scale(1.1);
+        }
+.bubbles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+.bubble {
+    position: absolute;
+    bottom: -50px;
+    width: 80px;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: float 8s infinite ease-in-out;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
+}
+.bubble:nth-child(1) { left: 10%; width: 15px; height: 15px; animation-duration: 6s; }
+.bubble:nth-child(2) { left: 20%; width: 25px; height: 25px; animation-duration: 8s; }
+.bubble:nth-child(3) { left: 30%; width: 10px; height: 10px; animation-duration: 7s; }
+.bubble:nth-child(4) { left: 40%; width: 30px; height: 30px; animation-duration: 5s; }
+.bubble:nth-child(5) { left: 50%; width: 20px; height: 20px; animation-duration: 6.5s; }
+.bubble:nth-child(6) { left: 60%; width: 25px; height: 25px; animation-duration: 7.5s; }
+.bubble:nth-child(7) { left: 70%; width: 15px; height: 15px; animation-duration: 5.5s; }
+.bubble:nth-child(8) { left: 80%; width: 20px; height: 20px; animation-duration: 8.2s; }
+.bubble:nth-child(9) { left: 90%; width: 30px; height: 30px; animation-duration: 9s; }
+.bubble:nth-child(10) { left: 95%; width: 18px; height: 18px; animation-duration: 12.7s; }
+.bubble:nth-child(11) { left: 95%; width: 18px; height: 18px; animation-duration: 11.6s; }
+.bubble:nth-child(12) { left: 15%; width: 19px; height: 28px; animation-duration: 0.7s; }
+.bubble:nth-child(1) { left: 10%; width: 15px; height: 15px; animation-duration: 6s; }
+.bubble:nth-child(2) { left: 20%; width: 25px; height: 25px; animation-duration: 14s; }
+.bubble:nth-child(3) { left: 30%; width: 10px; height: 10px; animation-duration: 11s; }
+.bubble:nth-child(4) { left: 40%; width: 30px; height: 30px; animation-duration: 5s; }
+.bubble:nth-child(5) { left: 50%; width: 20px; height: 20px; animation-duration: 6.5s; }
+.bubble:nth-child(6) { left: 60%; width: 25px; height: 25px; animation-duration: 7.5s; }
+.bubble:nth-child(7) { left: 70%; width: 15px; height: 15px; animation-duration: 5.5s; }
+.bubble:nth-child(8) { left: 80%; width: 20px; height: 20px; animation-duration: 8.2s; }
+.bubble:nth-child(9) { left: 90%; width: 30px; height: 30px; animation-duration: 9s; }
+.bubble:nth-child(10) { left: 95%; width: 18px; height: 18px; animation-duration: 6.7s; }
+.bubble:nth-child(11) { left: 95%; width: 18px; height: 18px; animation-duration: 3.6s; }
+.bubble:nth-child(12) { left: 15%; width: 19px; height: 28px; animation-duration: 9.7s; }
+.bubble:nth-child(1) { background: rgba(255, 0, 0, 0.6); } /* Red */
+.bubble:nth-child(2) { background: rgba(0, 255, 0, 0.6); } /* Green */
+.bubble:nth-child(3) { background: rgba(0, 0, 255, 0.6); } /* Blue */
+.bubble:nth-child(4) { background: rgba(255, 255, 0, 0.6); } /* Yellow */
+.bubble:nth-child(5) { background: rgba(255, 0, 255, 0.6); } /* Magenta */
+.bubble:nth-child(6) { background: rgba(0, 255, 255, 0.6); } /* Cyan */
+.bubble:nth-child(7) { background: rgba(255, 0, 0, 0.6); } /* Red */
+.bubble:nth-child(8) { background: rgba(0, 255, 0, 0.6); } /* Green */
+.bubble:nth-child(9) { background: rgba(0, 0, 255, 0.6); } /* Blue */
+.bubble:nth-child(10) { background: rgba(255, 255, 0, 0.6); } /* Yellow */
+.bubble:nth-child(11) { background: rgba(255, 0, 255, 0.6); } /* Magenta */
+.bubble:nth-child(12) { background: rgba(0, 255, 255, 0.6); } /* Cyan */
+@import url('https://fonts.cdnfonts.com/css/amerika'); /* Import Amerika font */
+.qbot-title {
+    font-size: 50px; /* Adjust size as needed */
+    font-weight: bold;
+    font-family: 'Amerika', sans-serif;
+    color: #c8b559;
+    text-align: center;
+    margin-bottom: 20px;
+}
+        /* Fade In Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }.bubbles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+.bubble {
+    position: absolute;
+    bottom: -50px;
+    width: 80px;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: float 8s infinite ease-in-out;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+        
+    }
+}
+
+}
+    </style>
+</head>
+<body>
+
+    
+    </main>
+
+    <!-- Bubble Background (Put it Here) -->
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+</body>
+    <div class="qbot-title">QBOT</div>
+
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box"></div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type a message..." autocomplete="off">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById('send-btn').addEventListener('click', function() {
+            sendMessage();
+        });
+
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value.trim();
+            if (userInput) {
+                appendMessage(userInput, 'user-message');
+                document.getElementById('user-input').value = '';
+                setTimeout(() => appendMessage(getBotResponse(userInput), 'bot-message'), 500);
+            }
+        }
+
+        function appendMessage(message, className) {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messageElement.classList.add(className);
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+
+        function getBotResponse(userInput) {
+            // Check if the input contains a math expression
+            if (/[\d\+\-\*\/\^\.]/.test(userInput)) {
+                return evaluateMath(userInput);  // If it matches a math expression, evaluate it
+            }
+
+            // Predefined responses
+            const responses = {
+                'hello': 'Hi there! How can I assist you today?',
+                'hi': 'Hello! What can I help you with today?',
+                'how are you': 'I\'m doing well, thank you for asking! How are you?',
+                'bye': 'Goodbye! Have a great day!',
+                'good morning': 'Good morning! How can I assist you today?',
+                'good evening': 'Good evening! How can I assist you today?',
+                'thank you': 'You\'re welcome! Let me know if you need anything else.',
+                'tell me a joke': 'Why don\'t scientists trust atoms? Because they make up everything!',
+                'who created you' : 'I was Designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who created you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who made you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who developed you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who built you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who programmed you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who designed you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who invented you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who is responsible for you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who engineered you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who brought you to life' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who is behind your creation' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'who thought of you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who is the mastermind behind you' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who is your creator' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'Who are the geniuses behind your design' : 'I was designed and developed by Ameen Afthab and Fasal Rahman.',
+                'default': 'Sorry, I think there is a network issue please check it,and try again',
+                'default': 'Sorry, I think there is a network issue please check it,and try again',
+                // Indian Prime Ministers
+                'who is the first prime minister of india': 'The first Prime Minister of India was Jawaharlal Nehru.',
+                'who is the prime minister of india': 'The current Prime Minister of India is Narendra Modi.',
+                'who was the first prime minister of india': 'The first Prime Minister of India was Jawaharlal Nehru.',
+                'who is the second prime minister of india': 'The second Prime Minister of India was Lal Bahadur Shastri.',
+                'who is the third prime minister of india': 'The third Prime Minister of India was Indira Gandhi.',
+                'who is the fourth prime minister of india': 'The fourth Prime Minister of India was Indira Gandhi.',
+                'who is the fifth prime minister of india': 'The fifth Prime Minister of India was Rajiv Gandhi.',
+                'who is the sixth prime minister of india': 'The sixth Prime Minister of India was Vishwanath Pratap Singh.',
+                'who is the seventh prime minister of india': 'The seventh Prime Minister of India was Chandra Shekhar.',
+                'who is the eighth prime minister of india': 'The eighth Prime Minister of India was P. V. Narasimha Rao.',
+                'who is the ninth prime minister of india': 'The ninth Prime Minister of India was Atal Bihari Vajpayee.',
+                'who is the tenth prime minister of india': 'The tenth Prime Minister of India was Atal Bihari Vajpayee.',
+                'who is the eleventh prime minister of india': 'The eleventh Prime Minister of India was Manmohan Singh.',
+                'who is the twelfth prime minister of india': 'The twelfth Prime Minister of India is Narendra Modi.',
+                'who is ameen afthab':'He is the genious who created me',
+                'what is the name of ameesha boyfriend name' : 'his name is Nikhil ',
+                'how can we use you':'you can ask any questions you want',                'what is jdt polytechnic college': 'JDT Islam Polytechnic College is a well-known technical institution located in Kozhikode, Kerala.',
+                'where is jdt polytechnic college': 'JDT Polytechnic College is in Vellimadukunnu, Kozhikode, Kerala, India.',
+                'how many teachers are there in jdt polytechnic college': 'As of 2024, JDT Polytechnic College has around 76 faculty members.',
+                'how many students are in jdt polytechnic college': 'The college has approximately 1,497 students.',
+                'what courses are available in jdt polytechnic college': 'JDT Polytechnic offers Diploma courses in Civil Engineering, Mechanical Engineering, Electrical & Electronics Engineering, and more.',
+                'who is the principal of jdt polytechnic college': 'The current principal of JDT Polytechnic College is Dr. [Insert Name].',
+                'what courses are offered at jdt polytechnic college':  'JDT Polytechnic College offers the following diploma courses:\n\n' +
+            '1) Diploma in Computer Engineering\n' +
+            '2) Diploma in Electronics & Communication Engineering\n' +
+            '3) Diploma in Mechanical Engineering\n' +
+            '4) Diploma in Civil Engineering\n' +
+            '5) Diploma in Electrical & Electronics Engineering\n' +
+            '6) Diploma in Automobile Engineering',
+
+        'tell me about diploma courses at jdt polytechnic': 
+            'JDT Polytechnic College offers diploma courses in various engineering fields:\n\n' +
+            '1) Computer Engineering\n' +
+            '2) Electronics & Communication Engineering\n' +
+            '3) Mechanical Engineering\n' +
+            '4) Civil Engineering\n' +
+            '5) Electrical & Electronics Engineering\n' +
+            '6) Automobile Engineering',
+
+    'who is the best football player of all time': 'Many people argue that the best football player of all time is Diego Maradona, Pelé, or Lionel Messi. It’s subjective, but all are considered legends.',
+    'who is the current best football player': 'As of now, Lionel Messi and Cristiano Ronaldo are often regarded as the top players in the world, though this can vary depending on form and achievements.',
+    'who won the last world cup': 'The last FIFA World Cup was won by France in 2018. They defeated Croatia 4-2 in the final.',
+    'who won the world cup in 2014': 'Germany won the 2014 FIFA World Cup, defeating Argentina 1-0 in the final with a goal by Mario Götze.',
+    'who is the top scorer in the premier league': 'The all-time top scorer in the Premier League is Alan Shearer with 260 goals.',
+    'who won the champions league in 2023': 'Manchester City won the 2023 UEFA Champions League, defeating Inter Milan 1-0 in the final.',
+    'who is the best football club': 'The title of the best football club is subjective. Clubs like Real Madrid, Barcelona, Manchester United, and Bayern Munich are often considered the best based on their history and achievements.',
+    'who is the best football player in the premier league': 'As of now, players like Kevin De Bruyne, Mohamed Salah, and Erling Haaland are often considered among the best in the Premier League.',
+    'what is the premier league': 'The Premier League is the top professional football division in England, consisting of 20 teams. It is one of the most competitive and watched football leagues in the world.',
+    'what is la liga': 'La Liga is the top professional football division in Spain, known for teams like Real Madrid, Barcelona, and Atlético Madrid.',
+    'who won the champions league in 2022': 'Real Madrid won the 2022 UEFA Champions League, defeating Liverpool 1-0 in the final.',
+    'who is the top scorer of la liga': 'Lionel Messi is the top scorer of La Liga with 474 goals, playing for FC Barcelona.',
+    'who won the world cup in 1998': 'France won the 1998 FIFA World Cup, defeating Brazil 3-0 in the final.',
+    'who is the most successful club in the world': 'Real Madrid is the most successful football club in terms of major trophies, especially in the UEFA Champions League.',
+    'when was the first world cup': 'The first FIFA World Cup was held in 1930 in Uruguay, where the host nation won the tournament.',
+    'who is cristiano ronaldo': 'Cristiano Ronaldo is a Portuguese professional footballer who is widely regarded as one of the greatest players of all time. He has won numerous individual awards and team trophies, including five Ballon d\'Ors.',
+    'who is lionel messi': 'Lionel Messi is an Argentine footballer considered one of the best players of all time. He has won multiple Ballon d\'Ors and has had an illustrious career with Barcelona and Paris Saint-Germain, now he plays for inter miami',
+    'who won the europa league in 2023': 'Sevilla won the 2023 UEFA Europa League, defeating AS Roma on penalties after a 1-1 draw in the final.',
+    'what is the fifa world cup': 'The FIFA World Cup is the premier international football competition held every four years, contested by national teams from around the world.',
+    'how many times has brazil won the world cup': 'Brazil has won the FIFA World Cup 5 times (1958, 1962, 1970, 1994, and 2002), the most by any nation.',
+    'who is the top scorer in football history': 'The top scorer in football history is Josef Bican, who scored over 800 goals in official matches. However, modern players like Cristiano Ronaldo and Lionel Messi are closing in on this record.',
+    'who is the coach of brazil national team': 'As of now, the coach of the Brazil national football team is Tite.',
+    'who is the coach of argentina national team': 'The coach of the Argentina national football team is Lionel Scaloni.',
+    'who is the most successful manager in football': 'The most successful manager in football, based on trophies won, is Sir Alex Ferguson, who won 49 trophies during his career, mainly with Manchester United.',
+    'what is el clasico': 'El Clásico is the term for the fierce rivalry between Spanish football clubs FC Barcelona and Real Madrid. It’s one of the most famous and heated fixtures in world football.',
+    'who are you':'iam an ai called QBOT',
+     'what is the time now': getCurrentTime()
+     
+                
+            };
+
+            return getFuzzyResponse(userInput, responses);
+        }
+
+        function getFuzzyResponse(userInput, responses) {
+            const cleanedInput = userInput.toLowerCase().replace(/\s+/g, ' ').trim();  // Normalize spaces
+            console.log("User Input (Cleaned):", cleanedInput);
+
+            let closestMatch = '';
+            let smallestDistance = Infinity;
+
+            for (const key in responses) {
+                const cleanedKey = key.toLowerCase().replace(/\s+/g, ' ').trim();  // Clean predefined response as well
+                const distance = levenshtein(cleanedInput, cleanedKey);
+                console.log(`Checking match: ${cleanedKey}, Distance: ${distance}`);
+                
+                if (distance < smallestDistance) {
+                    smallestDistance = distance;
+                    closestMatch = key;
+                }
+            }
+
+            console.log("Closest Match:", closestMatch);
+            console.log("Smallest Distance:", smallestDistance);
+            
+            // Threshold can be adjusted for more lenient matching
+            if (smallestDistance <= 5) { 
+                return responses[closestMatch];
+            } else {
+                return responses['default'];
+            }
+        }
+
+        function levenshtein(a, b) {
+            var tmp;
+            var i, j, alen = a.length, blen = b.length;
+            var arr = [];
+
+            for (i = 0; i <= alen; i++) {
+                arr[i] = [i];
+            }
+            for (j = 0; j <= blen; j++) {
+                arr[0][j] = j;
+            }
+
+            for (i = 1; i <= alen; i++) {
+                for (j = 1; j <= blen; j++) {
+                    tmp = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+                    arr[i][j] = Math.min(arr[i - 1][j] + 1, arr[i][j - 1] + 1, arr[i - 1][j - 1] + tmp);
+                }
+            }
+
+            return arr[alen][blen];
+        }
+
+        function evaluateMath(input) {
+            try {
+                const result = eval(input.replace(/[^\d+\-*/^(). ]/g, '').replace('^', '**'));
+                if (!isNaN(result)) {
+                    return 'The result is: ' + result;
+                } else {
+                    return 'Sorry, I think there is a network issue please check it,and try again';
+                }
+            } catch (error) {
+                return 'Sorry, I think there is a network issue please check it,and try again';
+            }
+
+        }
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            return `The current time is: ${hours}:${minutes}:${seconds}`;
+        }
+        
+ </script>
+</body>
+</html>
